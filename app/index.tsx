@@ -1,14 +1,93 @@
 import Colors from "@/services/Colors";
-import { useNavigation } from "expo-router";
-import { useEffect } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { axiosClinet } from "@/services/GlobalApi";
+import { useSSO, useUser } from "@clerk/clerk-expo";
+import * as AuthSession from "expo-auth-session";
+import { router, useNavigation } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { useCallback, useEffect } from "react";
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+export const useWarmUpBrowser = () => {
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    void WebBrowser.warmUpAsync();
+    return () => {
+      // Cleanup: closes browser when component unmounts
+      void WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function Index() {
+  useWarmUpBrowser();
+  // Use the `useSSO()` hook to access the `startSSOFlow()` method
+  const { startSSOFlow } = useSSO();
   const navigation = useNavigation();
+  const { user } = useUser();
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
+  }, []);
+
+  const createNewuser = async () => {
+    try {
+      console.log({
+        fullName: user?.fullName,
+        email: user?.primaryEmailAddress?.emailAddress,
+      });
+
+      const result = await axiosClinet.post("/user-lists", {
+        data: {
+          fullName: user?.fullName,
+          email: user?.primaryEmailAddress?.emailAddress,
+        },
+      });
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    user && createNewuser();
+  }, [user]);
+
+  const onPress = useCallback(async () => {
+    try {
+      // Start the authentication process by calling `startSSOFlow()`
+      const { createdSessionId, setActive, signIn, signUp } =
+        await startSSOFlow({
+          strategy: "oauth_google",
+          redirectUrl: AuthSession.makeRedirectUri(),
+        });
+
+      // If sign in was successful, set the active session
+      if (createdSessionId) {
+        setActive!({
+          session: createdSessionId,
+          navigate: async ({ session }) => {
+            if (session?.currentTask) {
+              console.log(session?.currentTask);
+              router.push("/");
+              return;
+            }
+
+            router.push("/");
+          },
+        });
+      }
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    }
   }, []);
 
   return (
@@ -48,7 +127,7 @@ export default function Index() {
           Discover thousand local business in one place
         </Text>
 
-        <View style={[styles.button]}>
+        <TouchableOpacity onPress={onPress} style={[styles.button]}>
           <Image
             source={require("../assets/images/google.png")}
             style={{
@@ -65,7 +144,7 @@ export default function Index() {
           >
             Sign in with google
           </Text>
-        </View>
+        </TouchableOpacity>
 
         <Text
           style={{
