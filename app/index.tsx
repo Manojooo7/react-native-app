@@ -2,7 +2,7 @@ import Colors from "@/services/Colors";
 import { axiosClinet } from "@/services/GlobalApi";
 import { useSSO, useUser } from "@clerk/clerk-expo";
 import * as AuthSession from "expo-auth-session";
-import { router, useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useEffect } from "react";
 import {
@@ -33,6 +33,7 @@ export default function Index() {
   const { startSSOFlow } = useSSO();
   const navigation = useNavigation();
   const { user } = useUser();
+  const router = useRouter();
   useEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -52,7 +53,10 @@ export default function Index() {
           email: user?.primaryEmailAddress?.emailAddress,
         },
       });
+
+      router.replace("/(tabs)/Home");
     } catch (error: any) {
+      router.replace("/(tabs)/Home");
       console.log(error);
     }
   };
