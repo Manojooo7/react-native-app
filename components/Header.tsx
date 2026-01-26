@@ -14,6 +14,7 @@ export default function Header() {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
+          marginTop: 20,
         }}
       >
         <View

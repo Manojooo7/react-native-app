@@ -68,9 +68,42 @@ export default function Index() {
   const onPress = useCallback(async () => {
     try {
       // Start the authentication process by calling `startSSOFlow()`
+      console.log("Trying to sign in");
+
       const { createdSessionId, setActive, signIn, signUp } =
         await startSSOFlow({
           strategy: "oauth_google",
+          redirectUrl: AuthSession.makeRedirectUri(),
+        });
+
+      // If sign in was successful, set the active session
+      if (createdSessionId) {
+        setActive!({
+          session: createdSessionId,
+          navigate: async ({ session }) => {
+            if (session?.currentTask) {
+              console.log(session?.currentTask);
+              router.push("/");
+              return;
+            }
+
+            router.push("/");
+          },
+        });
+      }
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  }, []);
+
+  const onPress1 = useCallback(async () => {
+    try {
+      // Start the authentication process by calling `startSSOFlow()`
+      console.log("Sign in with IOS");
+
+      const { createdSessionId, setActive, signIn, signUp } =
+        await startSSOFlow({
+          strategy: "oauth_apple",
           redirectUrl: AuthSession.makeRedirectUri(),
         });
 
@@ -150,17 +183,28 @@ export default function Index() {
           </Text>
         </TouchableOpacity>
 
-        <Text
-          style={{
-            fontFamily: "appFont",
-            fontSize: 18,
-            textAlign: "center",
-            marginTop: 10,
-            textDecorationLine: "underline",
-          }}
-        >
-          skip
-        </Text>
+        <TouchableOpacity onPress={onPress1} style={[styles.button]}>
+          <Image
+            source={require("../assets/images/apple-logo.png")}
+            style={{
+              width: 20,
+              height: 20,
+            }}
+          />
+          <Text
+            style={{
+              fontFamily: "appFont",
+              fontSize: 18,
+              textAlign: "center",
+            }}
+          >
+            Sign in with Apple
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <Text style={styles.skipButton}>skip</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -189,5 +233,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     height: 60,
     backgroundColor: "#f1f1f1",
+  },
+
+  skipButton: {
+    fontFamily: "appFont",
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 10,
+    textDecorationLine: "underline",
   },
 });
