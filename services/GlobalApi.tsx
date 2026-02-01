@@ -6,7 +6,7 @@ if (!APIEKEY) {
 }
 
 export const axiosClinet = axios.create({
-  baseURL: "http://192.168.0.104:1337/api",
+  baseURL: "http://192.168.0.102:1337/api",
   headers: {
     "Content-Type": "application/json",
     Authorization: `Bearer ${APIEKEY}`,
