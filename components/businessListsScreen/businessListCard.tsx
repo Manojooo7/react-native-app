@@ -1,7 +1,8 @@
 import Colors from "@/services/Colors";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { useRouter } from "expo-router";
 import React from "react";
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { BusinessListType } from "../BusinessList";
 
 type Props = {
@@ -9,8 +10,17 @@ type Props = {
 };
 
 export default function BusinessListCard({ business }: Props) {
+  const router = useRouter();
   return (
-    <View
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/business-details",
+          params: {
+            business: JSON.stringify(business),
+          },
+        })
+      }
       style={{
         padding: 7,
         backgroundColor: Colors.WHITE,
@@ -69,6 +79,6 @@ export default function BusinessListCard({ business }: Props) {
           <Text>4.5/5</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

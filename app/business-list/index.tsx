@@ -1,16 +1,16 @@
 import { BusinessListType } from "@/components/BusinessList";
-import BusinessListCard from "@/components/businessListsScreen/businessListCard";
+import BusinessListCard from "@/components/businessListsScreen/BusinessListCard";
 import Colors from "@/services/Colors";
 import { axiosClinet } from "@/services/GlobalApi";
 import Feather from "@expo/vector-icons/Feather";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    FlatList,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function BusinessList() {
@@ -20,7 +20,7 @@ export default function BusinessList() {
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { categoryName } = useLocalSearchParams();
-  console.log(categoryName);
+  // console.log(categoryName);
 
   const router = useRouter();
 
@@ -37,7 +37,7 @@ export default function BusinessList() {
     setBusinessList(result?.data?.data);
     setFilteredBusinessList(result?.data?.data);
     setLoading(false);
-    console.log("Category List: ", result.data.data);
+    // console.log("Category List: ", result.data.data);
   };
 
   const searchAndFilterBusinessList = (searchInput: string) => {

@@ -16,6 +16,8 @@ export type BusinessListType = {
   createdby: string;
   premium: boolean;
   category: CategoryType;
+  phone: string;
+  website: string;
 };
 
 export default function BusinessList() {
@@ -137,7 +139,6 @@ export default function BusinessList() {
                   <AntDesign name="star" size={15} color="#eab308" />
                   <Text>4</Text>
                 </View>
-                {/* large Files */}
                 <Text>View</Text>
               </View>
             </View>
