@@ -68,6 +68,8 @@ export default function Index() {
   const onPress = useCallback(async () => {
     try {
       // Start the authentication process by calling `startSSOFlow()`
+      console.log("trying to sign-in");
+
       const { createdSessionId, setActive, signIn, signUp } =
         await startSSOFlow({
           strategy: "oauth_google",
