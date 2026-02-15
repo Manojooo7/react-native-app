@@ -1,5 +1,6 @@
 import Colors from "@/services/Colors";
 import { axiosClinet } from "@/services/GlobalApi";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
@@ -10,6 +11,7 @@ export type CategoryType = {
 };
 export default function Categories() {
   const [categories, setCategories] = useState<CategoryType[]>();
+  const router = useRouter();
 
   useEffect(() => {
     getAllCategories();
@@ -20,6 +22,15 @@ export default function Categories() {
     );
     // console.log("categories", getCategories.data.data);
     setCategories(getCategories?.data?.data);
+  };
+
+  const hanldeCategoryClick = (categoty: string) => {
+    router.push({
+      pathname: "/business-list",
+      params: {
+        categoryName: categoty,
+      },
+    });
   };
 
   return (
@@ -74,6 +85,7 @@ export default function Categories() {
               justifyContent: "center",
               gap: 3,
             }}
+            onPress={() => hanldeCategoryClick(item.name)}
           >
             <Image
               source={{ uri: item.icon.url }}
