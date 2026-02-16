@@ -3,12 +3,12 @@ import Fontisto from "@expo/vector-icons/Fontisto";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import React from "react";
 import {
-    Linking,
-    Platform,
-    Share,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Linking,
+  Platform,
+  Share,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { BusinessListType } from "../BusinessList";
 
@@ -17,25 +17,65 @@ type Props = {
 };
 
 export default function ActionButtons({ business }: Props) {
-  const onNavigate = async () => {
-    const nativeUrl =
-      Platform.OS == "ios"
-        ? `maps:0.0?q=${business?.address}`
-        : `gep.0,0?q=${business?.address}`;
+  // const onNavigate = async () => {
+  //     const encodedAddress = encodeURIComponent(business.address);
 
-    await Linking.openURL(nativeUrl);
+  //   const nativeUrl =
+  //     Platform.OS == "ios"
+  //       ? `maps:0.0?q=${encodedAddress}`
+  //       : `geo.0,0?q=${encodedAddress}`;
+
+  //   await Linking.openURL(nativeUrl);
+  // };
+
+  const onNavigate = async () => {
+    if (!business?.address) return;
+
+    const encodedAddress = encodeURIComponent(business.address);
+
+    const url =
+      Platform.OS === "ios"
+        ? `maps:0,0?q=${encodedAddress}`
+        : `geo:0,0?q=${encodedAddress}`;
+
+    const supported = await Linking.canOpenURL(url);
+
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      console.log("No maps app available");
+    }
   };
 
+  // const onCall = async () => {
+  //   const callUrl = `<tel:1>${business?.phone}<tel:1>`;
+  //   await Linking.openURL(callUrl);
+  // };
+
+  // const onOpenWebsite = async () => {
+  //   const websiteUrl = business.website.startsWith("http")
+  //     ? business.website
+  //     : `https://${business?.website}`;
+  //   await Linking.openURL(websiteUrl);
+  // };
+
   const onCall = async () => {
-    const callUrl = `<tel:1>${business?.phone}<tel:1>`;
-    await Linking.openURL(callUrl);
+    if (!business?.phone) return;
+
+    const phone = business.phone.replace(/\s+/g, "");
+    const url = `tel:${phone}`;
+
+    await Linking.openURL(url);
   };
 
   const onOpenWebsite = async () => {
-    const websiteUrl = business.website.startsWith("http")
+    if (!business?.website) return;
+
+    const url = business.website.startsWith("http")
       ? business.website
-      : `https://${business?.website}`;
-    await Linking.openURL(websiteUrl);
+      : `https://${business.website}`;
+
+    await Linking.openURL(url);
   };
 
   const onShare = async () => {
